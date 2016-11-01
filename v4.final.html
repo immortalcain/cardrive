@@ -60,7 +60,7 @@
       <span id="speed"            class="hud"><span id="speed_value" class="value">0</span> mph</span>
       <span id="current_lap_time" class="hud">Time: <span id="current_lap_time_value" class="value">0.0</span></span> 
       <span id="last_lap_time"    class="hud">Last Lap: <span id="last_lap_time_value" class="value">0.0</span></span>
-      <span id="fast_lap_time"    class="hud">Fastest Lap: <span id="fast_lap_time_value" class="value">0.0</span></span>
+      <span id="fast_lap_time"    class="hud">Motor Life: <span id="fast_lap_time_value" class="value">0.0</span></span>
     </div>
     <canvas id="canvas">
       Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
@@ -170,18 +170,22 @@
 
         if (speed > offRoadLimit)
           speed = Util.accelerate(speed, offRoadDecel, dt);
-        for(n = 0 ; n < playerSegment.sprites.length ; n++) {
-          console.log('yoldan çıktın');
+        console.log('yoldan çıktın');
+      }
+      for(n = 0 ; n < playerSegment.sprites.length ; n++) {
+          
           sprite  = playerSegment.sprites[n];
           spriteW = sprite.source.w * SPRITES.SCALE;
           if (Util.overlap(playerX, playerW, sprite.offset + spriteW/2 * (sprite.offset > 0 ? 1 : -1), spriteW)) {
-            console.log('dışarıya çarptın');
+
+            /*NEYE ÇARPTIĞINI BURADAN BİLİYORUM*/
+            console.log(sprite.source.n);
+
             speed = maxSpeed/5;
             position = Util.increase(playerSegment.p1.world.z, -playerZ, trackLength); // stop in front of sprite (at front of segment)
             break;
           }
         }
-      }
 
       for(n = 0 ; n < playerSegment.cars.length ; n++) {
         console.log('araba çıktı');
@@ -190,6 +194,8 @@
         if (speed > car.speed) {
           if (Util.overlap(playerX, playerW, car.offset, carW, 0.8)) {
             console.log('arabaya çarptın');
+            alert('kaza yaptın arabaya çarptın');
+            car.offset = -9999;
             speed    = car.speed * (car.speed/speed);
             position = Util.increase(car.z, -playerZ, trackLength);
             break;
@@ -211,7 +217,7 @@
           currentLapTime = 0;
           if (lastLapTime <= Util.toFloat(Dom.storage.fast_lap_time)) {
             Dom.storage.fast_lap_time = lastLapTime;
-            updateHud('fast_lap_time', formatTime(lastLapTime));
+            updateHud('fast_lap_time', lastLapTime);
             Dom.addClassName('fast_lap_time', 'fastest');
             Dom.addClassName('last_lap_time', 'fastest');
           }
@@ -219,7 +225,7 @@
             Dom.removeClassName('fast_lap_time', 'fastest');
             Dom.removeClassName('last_lap_time', 'fastest');
           }
-          updateHud('last_lap_time', formatTime(lastLapTime));
+          updateHud('last_lap_time', lastLapTime);
           Dom.show('last_lap_time');
         }
         else {
@@ -228,7 +234,7 @@
       }
 
       updateHud('speed',            5 * Math.round(speed/500));
-      updateHud('current_lap_time', formatTime(currentLapTime));
+      updateHud('current_lap_time', currentLapTime);
     }
 
     //-------------------------------------------------------------------------
@@ -549,10 +555,13 @@
       addSprite(segments.length - 25, SPRITES.BILLBOARD07, -1.2);
       addSprite(segments.length - 25, SPRITES.BILLBOARD06,  1.2);
 
-      for(n = 10 ; n < 200 ; n += 4 + Math.floor(n/100)) {
-        addSprite(n, SPRITES.PALM_TREE, 0.5 + Math.random()*0.5);
-        addSprite(n, SPRITES.PALM_TREE,   1 + Math.random()*2);
-      }
+
+      /*PALMİYELER*/
+
+      // for(n = 10 ; n < 200 ; n += 4 + Math.floor(n/100)) {
+      //   addSprite(n, SPRITES.PALM_TREE, 0.5 + Math.random()*0.5);
+      //   addSprite(n, SPRITES.PALM_TREE,   1 + Math.random()*2);
+      // }
 
       for(n = 250 ; n < 1000 ; n += 5) {
         addSprite(n,     SPRITES.COLUMN, 1.1);
@@ -615,7 +624,7 @@
         sprites    = images[1];
         reset();
         Dom.storage.fast_lap_time = Dom.storage.fast_lap_time || 180;
-        updateHud('fast_lap_time', formatTime(Util.toFloat(Dom.storage.fast_lap_time)));
+        updateHud('fast_lap_time', Util.toFloat(Dom.storage.fast_lap_time));
       }
     });
 
