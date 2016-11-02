@@ -180,8 +180,13 @@
 
             /*NEYE ÇARPTIĞINI BURADAN BİLİYORUM*/
             console.log(sprite.source.n);
+            if (sprite.source.n) {
+              sprite.offset = -9999;
+              alert(sprite.source.n);
+            }
+            keyFaster = false;
+            speed = 0;
 
-            speed = maxSpeed/5;
             position = Util.increase(playerSegment.p1.world.z, -playerZ, trackLength); // stop in front of sprite (at front of segment)
             break;
           }
@@ -196,7 +201,8 @@
             console.log('arabaya çarptın');
             alert('kaza yaptın arabaya çarptın');
             car.offset = -9999;
-            speed    = car.speed * (car.speed/speed);
+            keyFaster = false;
+            speed = 0;
             position = Util.increase(car.z, -playerZ, trackLength);
             break;
           }
@@ -540,15 +546,15 @@
     function resetSprites() {
       var n, i;
 
-      addSprite(20,  SPRITES.BILLBOARD07, 0);
-      addSprite(40,  SPRITES.BILLBOARD06, 0);
-      addSprite(60,  SPRITES.BILLBOARD08, 0);
-      addSprite(80,  SPRITES.BILLBOARD09, 0);
-      addSprite(100, SPRITES.BILLBOARD01, 0);
-      addSprite(120, SPRITES.BILLBOARD02, 0);
-      addSprite(140, SPRITES.BILLBOARD03, 0);
-      addSprite(160, SPRITES.BILLBOARD04, 0);
-      addSprite(180, SPRITES.BILLBOARD05, 0);
+      addSprite(20,  SPRITES.BILLBOARD07, -0.1);
+      addSprite(40,  SPRITES.BILLBOARD06, 0.1);
+      addSprite(60,  SPRITES.BILLBOARD08, -0.1);
+      addSprite(80,  SPRITES.BILLBOARD09, 0.1);
+      addSprite(100, SPRITES.BILLBOARD01, -0.1);
+      addSprite(120, SPRITES.BILLBOARD02, 0.1);
+      addSprite(140, SPRITES.BILLBOARD03, -0.1);
+      addSprite(160, SPRITES.BILLBOARD04, 0.1);
+      addSprite(180, SPRITES.BILLBOARD05, -0.1);
 
       addSprite(240,                  SPRITES.BILLBOARD07, -1.2);
       addSprite(240,                  SPRITES.BILLBOARD06,  1.2);
@@ -558,10 +564,10 @@
 
       /*PALMİYELER*/
 
-      // for(n = 10 ; n < 200 ; n += 4 + Math.floor(n/100)) {
-      //   addSprite(n, SPRITES.PALM_TREE, 0.5 + Math.random()*0.5);
-      //   addSprite(n, SPRITES.PALM_TREE,   1 + Math.random()*2);
-      // }
+      for(n = 10 ; n < 200 ; n += 4 + Math.floor(n/100)) {
+        addSprite(n, SPRITES.PALM_TREE, 0.5 + Math.random()*0.5);
+        addSprite(n, SPRITES.PALM_TREE,   1 + Math.random()*2);
+      }
 
       for(n = 250 ; n < 1000 ; n += 5) {
         addSprite(n,     SPRITES.COLUMN, 1.1);
