@@ -57,9 +57,10 @@
 
   <div id="racer">
     <div id="hud">
-      <span id="speed"            class="hud"><span id="speed_value" class="value">0</span> mph</span>
+      <span id="speed"            class="hud"><span id="speed_value" class="value">0</span> kmh</span>
       <span id="current_lap_time" class="hud">Time: <span id="current_lap_time_value" class="value">0.0</span></span> 
-      <span id="last_lap_time"    class="hud">Last Lap: <span id="last_lap_time_value" class="value">0.0</span></span>
+      <span id="last_lap_time"    class="hud"></span>
+      <span id="distance" class="hud"></span>
       <span id="fast_lap_time"    class="hud">Motor Life: <span id="fast_lap_time_value" class="value">0.0</span></span>
     </div>
     <canvas id="canvas">
@@ -130,7 +131,6 @@
     var hud = {
       speed:            { value: null, dom: Dom.get('speed_value')            },
       current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
-      last_lap_time:    { value: null, dom: Dom.get('last_lap_time_value')    },
       fast_lap_time:    { value: null, dom: Dom.get('fast_lap_time_value')    }
     }
 
@@ -182,11 +182,17 @@
             console.log(sprite.source.n);
             if (sprite.source.n) {
               sprite.offset = -9999;
-              alert(sprite.source.n);
+               Dom.get('last_lap_time').textContent = sprite.source.n;
+               if (sprite.source.n == 'enerji') {
+                Dom.get('last_lap_time').textContent = 'koruma aldın';
+               }
+               else {
+                keyFaster = false;
+                speed = 0;
+                fast_lap_time--;
+                updateHud('fast_lap_time', fast_lap_time);
+               }
             }
-            keyFaster = false;
-            speed = 0;
-
             position = Util.increase(playerSegment.p1.world.z, -playerZ, trackLength); // stop in front of sprite (at front of segment)
             break;
           }
@@ -198,8 +204,9 @@
         carW = car.sprite.w * SPRITES.SCALE;
         if (speed > car.speed) {
           if (Util.overlap(playerX, playerW, car.offset, carW, 0.8)) {
-            console.log('arabaya çarptın');
-            alert('kaza yaptın arabaya çarptın');
+             Dom.get('last_lap_time').textContent = 'kaza yaptın arabaya çarptın';
+             fast_lap_time--;
+             updateHud('fast_lap_time', fast_lap_time);
             car.offset = -9999;
             keyFaster = false;
             speed = 0;
@@ -225,14 +232,11 @@
             Dom.storage.fast_lap_time = lastLapTime;
             updateHud('fast_lap_time', lastLapTime);
             Dom.addClassName('fast_lap_time', 'fastest');
-            Dom.addClassName('last_lap_time', 'fastest');
           }
           else {
             Dom.removeClassName('fast_lap_time', 'fastest');
-            Dom.removeClassName('last_lap_time', 'fastest');
           }
-          updateHud('last_lap_time', lastLapTime);
-          Dom.show('last_lap_time');
+
         }
         else {
           currentLapTime += dt;
@@ -629,8 +633,8 @@
         background = images[0];
         sprites    = images[1];
         reset();
-        Dom.storage.fast_lap_time = Dom.storage.fast_lap_time || 180;
-        updateHud('fast_lap_time', Util.toFloat(Dom.storage.fast_lap_time));
+        fast_lap_time = 5;
+        updateHud('fast_lap_time', fast_lap_time);
       }
     });
 

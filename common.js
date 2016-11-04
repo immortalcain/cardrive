@@ -357,8 +357,8 @@ var COLORS = {
   SKY:  '#72D7EE',
   TREE: '#005108',
   FOG:  '#005108',
-  LIGHT:  { road: '#6B6B6B', grass: '#10AA10', rumble: '#555555', lane: '#CCCCCC'  },
-  DARK:   { road: '#696969', grass: '#009A00', rumble: '#BBBBBB'                   },
+  LIGHT:  { road: '#a0968c', grass: '#0e8081', rumble: '#ced9df', lane: '#0000'  },
+  DARK:   { road: '#a2988e', grass: '#0d7879', rumble: '#c8d2d8'                   },
   START:  { road: 'white',   grass: 'white',   rumble: 'white'                     },
   FINISH: { road: 'black',   grass: 'black',   rumble: 'black'                     }
 };
@@ -371,7 +371,7 @@ var BACKGROUND = {
 
 var SPRITES = {
   PALM_TREE:              { x:    5, y:    5, w:  215, h:  540},
-  BILLBOARD08:            { x:  230, y:    5, w:  385, h:  265, n:'durak' },
+  BILLBOARD08:            { x:  230, y:    5, w:  385, h:  265, n:'enerji' },
   TREE1:                  { x:  625, y:    5, w:  360, h:  360 },
   DEAD_TREE1:             { x:    5, y:  555, w:  135, h:  332 },
   BILLBOARD09:            { x:  150, y:  555, w:  328, h:  282, n:'durak' },
