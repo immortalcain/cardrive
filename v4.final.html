@@ -137,6 +137,12 @@
     //=========================================================================
     // UPDATE THE GAME WORLD
     //=========================================================================
+    var motorkoruma = false;
+function motorkoru() {
+motorkoruma = true;
+Dom.addClassName('fast_lap_time', 'koruma');
+  setTimeout(function(){ motorkoruma = false;Dom.removeClassName('fast_lap_time', 'koruma');}, 3000);
+}
 
     function update(dt) {
 
@@ -185,11 +191,14 @@
                Dom.get('last_lap_time').textContent = sprite.source.n;
                if (sprite.source.n == 'enerji') {
                 Dom.get('last_lap_time').textContent = 'koruma aldın';
+                motorkoru();
                }
                else {
                 keyFaster = false;
                 speed = 0;
-                fast_lap_time--;
+                if (!motorkoruma) {
+                  fast_lap_time--;
+                 }
                 updateHud('fast_lap_time', fast_lap_time);
                }
             }
@@ -205,7 +214,10 @@
         if (speed > car.speed) {
           if (Util.overlap(playerX, playerW, car.offset, carW, 0.8)) {
              Dom.get('last_lap_time').textContent = 'kaza yaptın arabaya çarptın';
-             fast_lap_time--;
+             if (!motorkoruma) {
+              fast_lap_time--;
+             }
+             
              updateHud('fast_lap_time', fast_lap_time);
             car.offset = -9999;
             keyFaster = false;
