@@ -178,6 +178,7 @@ Dom.addClassName('fast_lap_time', 'koruma');
           speed = Util.accelerate(speed, offRoadDecel, dt);
         console.log('yoldan çıktın');
       }
+      Dom.get('distance').textContent = position;
       for(n = 0 ; n < playerSegment.sprites.length ; n++) {
           
           sprite  = playerSegment.sprites[n];
