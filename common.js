@@ -357,7 +357,7 @@ var COLORS = {
   SKY:  '#72D7EE',
   TREE: '#005108',
   FOG:  '#005108',
-  LIGHT:  { road: '#a0968c', grass: '#0e8081', rumble: '#ced9df', lane: '#0000'  },
+  LIGHT:  { road: '#a0968c', grass: '#0e8081', rumble: '#ced9df', lane: '#fff'  },
   DARK:   { road: '#a2988e', grass: '#0d7879', rumble: '#c8d2d8'                   },
   START:  { road: 'white',   grass: 'white',   rumble: 'white'                     },
   FINISH: { road: 'black',   grass: 'black',   rumble: 'black'                     }
@@ -377,8 +377,8 @@ var SPRITES = {
   BILLBOARD09:            { x:  150, y:  555, w:  328, h:  282, n:'durak' },
   BOULDER3:               { x:  230, y:  280, w:  320, h:  220 },
   COLUMN:                 { x:  995, y:    5, w:  200, h:  315 },
-  BILLBOARD01:            { x:  625, y:  375, w:  300, h:  170, n:'durak' },
-  BILLBOARD06:            { x:  488, y:  555, w:  298, h:  190, n:'durak' },
+  BILLBOARD01:            { x:  1500, y:  1500, w:  544, h:  170, n:'duracak'},
+  BILLBOARD06:            { x:  492, y:  664, w:  544, h:  165, n:'durak' },
   BILLBOARD05:            { x:    5, y:  897, w:  298, h:  190, n:'durak'},
   BILLBOARD07:            { x:  313, y:  897, w:  298, h:  190, n:'durak' },
   BOULDER2:               { x:  621, y:  897, w:  298, h:  140 },
@@ -401,9 +401,9 @@ var SPRITES = {
   PLAYER_UPHILL_LEFT:     { x: 1383, y:  961, w:   80, h:   45 },
   PLAYER_UPHILL_STRAIGHT: { x: 1295, y: 1018, w:   80, h:   45 },
   PLAYER_UPHILL_RIGHT:    { x: 1385, y: 1018, w:   80, h:   45 },
-  PLAYER_LEFT:            { x:  995, y:  480, w:   80, h:   41 },
-  PLAYER_STRAIGHT:        { x: 1085, y:  480, w:   80, h:   41 },
-  PLAYER_RIGHT:           { x:  995, y:  531, w:   80, h:   41 }
+  PLAYER_LEFT:            { x:  987, y:  471, w:   79, h:   78 },
+  PLAYER_STRAIGHT:        { x: 1066, y:  471, w:   79, h:   78 },
+  PLAYER_RIGHT:           { x:  987, y:  549, w:   79, h:   78 }
 };
 
 SPRITES.SCALE = 0.3 * (1/SPRITES.PLAYER_STRAIGHT.w) // the reference sprite width should be 1/3rd the (half-)roadWidth

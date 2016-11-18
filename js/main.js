@@ -1,83 +1,3 @@
-<!DOCTYPE html> 
-
-<html>
-<head>
-  <title>Javascript Racer - v4 (final)</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <link href="common.css" rel="stylesheet" type="text/css" />
-</head> 
-
-<body> 
-
-  <table id="controls">
-    <tr><td id="fps" colspan="2" align="right"></td></tr>
-    <tr>
-      <th><label for="resolution">Resolution :</label></th>
-      <td>
-        <select id="resolution" style="width:100%">
-          <option value='fine'>Fine (1280x960)</option>
-          <option selected value='high'>High (1024x768)</option>
-          <option value='medium'>Medium (640x480)</option>
-          <option value='low'>Low (480x360)</option>
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <th><label for="lanes">Lanes :</label></th>
-      <td>
-        <select id="lanes">
-          <option>1</option>
-          <option>2</option>
-          <option selected>3</option>
-          <option>4</option>
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <th><label for="roadWidth">Road Width (<span id="currentRoadWidth"></span>) :</label></th>
-      <td><input id="roadWidth" type='range' min='500' max='3000' title="integer (500-3000)"></td>
-    </tr>
-    <tr>
-      <th><label for="cameraHeight">CameraHeight (<span id="currentCameraHeight"></span>) :</label></th>
-      <td><input id="cameraHeight" type='range' min='500' max='5000' title="integer (500-5000)"></td>
-    </tr>
-    <tr>
-      <th><label for="drawDistance">Draw Distance (<span id="currentDrawDistance"></span>) :</label></th>
-      <td><input id="drawDistance" type='range' min='100' max='500' title="integer (100-500)"></td>
-    </tr>
-    <tr>
-      <th><label for="fieldOfView">Field of View (<span id="currentFieldOfView"></span>) :</label></th>
-      <td><input id="fieldOfView" type='range' min='80' max='140' title="integer (80-140)"></td>
-    </tr>
-    <tr>
-      <th><label for="fogDensity">Fog Density (<span id="currentFogDensity"></span>) :</label></th>
-      <td><input id="fogDensity" type='range' min='0' max='50' title="integer (0-50)"></td>
-    </tr>
-  </table>
-
-  <div id="racer">
-    <div id="hud">
-      <span id="speed"            class="hud"><span id="speed_value" class="value">0</span> kmh</span>
-      <span id="current_lap_time" class="hud">Time: <span id="current_lap_time_value" class="value">0.0</span></span> 
-      <span id="last_lap_time"    class="hud"></span>
-      <span id="distance" class="hud"></span>
-      <span id="fast_lap_time"    class="hud">Motor Life: <span id="fast_lap_time_value" class="value">0.0</span></span>
-    </div>
-    <canvas id="canvas">
-      Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
-    </canvas>
-    Loading...
-  </div>
-
-  <audio id='music'>
-    <source src="music/racer.ogg">
-    <source src="music/racer.mp3">
-  </audio>
-  <span id="mute"></span>
-
-  <script src="stats.js"></script>
-  <script src="common.js"></script>
-  <script>
 
     var fps            = 30;                      // how many 'update' frames per second
     var step           = 1/fps;                   // how long is each frame (in seconds)
@@ -99,13 +19,13 @@
     var background     = null;                    // our background image (loaded below)
     var sprites        = null;                    // our spritesheet (loaded below)
     var resolution     = null;                    // scaling factor to provide resolution independence (computed)
-    var roadWidth      = 2500;                    // actually half the roads width, easier math if the road spans from -roadWidth to +roadWidth
+    var roadWidth      = 2754;                    // actually half the roads width, easier math if the road spans from -roadWidth to +roadWidth
     var segmentLength  = 200;                     // length of a single segment
     var rumbleLength   = 3;                       // number of segments per red/white rumble strip
     var trackLength    = null;                    // z length of entire track (computed)
     var lanes          = 3;                       // number of lanes
     var fieldOfView    = 100;                     // angle (degrees) for field of view
-    var cameraHeight   = 2000;                    // z height of camera
+    var cameraHeight   = 3604;                    // z height of camera
     var cameraDepth    = null;                    // z distance camera is from screen (computed)
     var drawDistance   = 300;                     // number of segments to draw
     var playerX        = 0;                       // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
@@ -115,7 +35,7 @@
     var speed          = 0;                       // current speed
     var maxSpeed       = segmentLength/step;      // top speed (ensure we can't move more than 1 segment in a single frame to make collision detection easier)
     var accel          =  maxSpeed/5;             // acceleration rate - tuned until it 'felt' right
-    var breaking       = -maxSpeed;               // deceleration rate when braking
+    var breaking       = -maxSpeed*5;               // deceleration rate when braking
     var decel          = -maxSpeed/5;             // 'natural' deceleration rate when neither accelerating, nor braking
     var offRoadDecel   = -maxSpeed/2;             // off road deceleration is somewhere in between
     var offRoadLimit   =  maxSpeed/4;             // limit when off road deceleration no longer applies (e.g. you can always go at least this speed even when off road)
@@ -131,23 +51,28 @@
     var hud = {
       speed:            { value: null, dom: Dom.get('speed_value')            },
       current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
-      fast_lap_time:    { value: null, dom: Dom.get('fast_lap_time_value')    }
+      fast_lap_time:    { value: null, dom: Dom.get('fast_lap_time_value')    },
+      distance:    { value: null, dom: Dom.get('distance')    },
     }
-
+    
     //=========================================================================
     // UPDATE THE GAME WORLD
     //=========================================================================
     var motorkoruma = false;
-function motorkoru() {
-motorkoruma = true;
-Dom.addClassName('fast_lap_time', 'koruma');
-  setTimeout(function(){ motorkoruma = false;Dom.removeClassName('fast_lap_time', 'koruma');}, 3000);
-}
+    doModal('BAŞLANGIÇ',1);
+
+    function motorkoru() {
+        motorkoruma = true;
+        Dom.addClassName('fast_lap_time', 'koruma');
+        setTimeout(function() { motorkoruma = false;
+            Dom.removeClassName('fast_lap_time', 'koruma'); }, 3000);
+    }
 
     function update(dt) {
 
       var n, car, carW, sprite, spriteW;
-      var playerSegment = findSegment(position+playerZ+1000);
+      var playerSegment = findSegment(position+playerZ);
+      var playerSegment2= findSegment(position+1500+playerZ);
       var playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
       var speedPercent  = speed/maxSpeed;
       var dx            = dt * 2 * speedPercent; // at top speed, should be able to cross from left to right (-1 to 1) in 1 second
@@ -178,43 +103,44 @@ Dom.addClassName('fast_lap_time', 'koruma');
           speed = Util.accelerate(speed, offRoadDecel, dt);
         console.log('yoldan çıktın');
       }
-      for(n = 0 ; n < playerSegment.sprites.length ; n++) {
-          
-          sprite  = playerSegment.sprites[n];
-          spriteW = sprite.source.w * SPRITES.SCALE;
-          if (Util.overlap(playerX , playerW, sprite.offset + spriteW/2 * 0, spriteW)) {
 
-            /*NEYE ÇARPTIĞINI BURADAN BİLİYORUM*/
-            if (sprite.source.n) {
-              
-               Dom.get('last_lap_time').textContent = sprite.source.n;
-               if (sprite.source.n == 'enerji') {
-                Dom.get('last_lap_time').textContent = 'koruma aldın';
-                motorkoru();
-               }
-               else {
-                doModal(sprite.source.n);
-                keyFaster = false;
-                var refreshIntervalId = setInterval(function () {
-                  speed = speed - 2000;
-                  if (speed <= 0 ) {
-                    sprite.offset = -9999;
-                    clearInterval(refreshIntervalId);
-                  }
-                  console.log(speed);
-                }, 100);
-                
-                
-                if (!motorkoruma) {
-                  fast_lap_time--;
-                 }
-                updateHud('fast_lap_time', fast_lap_time);
-               }
-            }
-            // position = Util.increase(playerSegment.p1.world.z, -playerZ, trackLength); // stop in front of sprite (at front of segment)
-            // break;
-          }
+      for (n = 0; n < playerSegment2.sprites.length; n++) {
+    sprite = playerSegment2.sprites[n];
+    spriteW = sprite.source.w * SPRITES.SCALE;
+    if (Util.overlap(playerX, playerW, sprite.offset + spriteW / 2 * 0, spriteW)) {
+
+        /*NEYE ÇARPTIĞINI BURADAN BİLİYORUM*/
+        if (sprite.source.n) {
+            Dom.get('last_lap_time').textContent = sprite.source.n;
+              if (sprite.source.n == 'durak') {
+                    keyFaster = false;
+                    keySlower = true;
+                    var lasts = sprite;
+                    doModal(sprite.source.n);
+                    var refreshIntervalId = setInterval(function() {
+                        if (speed <= 0) {
+                          console.log(sprite);
+                          lasts.offset = -9999;
+                          clearInterval(refreshIntervalId);
+                        }
+                    }, 100);
+                    if (!motorkoruma) {
+                        fast_lap_time--;
+                        updateHud('fast_lap_time', fast_lap_time);
+                    }
+                } 
+                if (sprite.source.n == 'enerji') {
+                    Dom.get('last_lap_time').textContent = 'koruma aldın';
+                    motorkoru();
+                } else {
+                    
+                }
         }
+        // position = Util.increase(playerSegment.p1.world.z, -playerZ, trackLength); // stop in front of sprite (at front of segment)
+        // break;
+    }
+}
+
 
       for(n = 0 ; n < playerSegment.cars.length ; n++) {
         console.log('araba çıktı');
@@ -226,8 +152,8 @@ Dom.addClassName('fast_lap_time', 'koruma');
              if (!motorkoruma) {
               fast_lap_time--;
              }
-             
-             updateHud('fast_lap_time', fast_lap_time);
+           doModal('kaza');
+           updateHud('fast_lap_time', fast_lap_time);
             car.offset = -9999;
             keyFaster = false;
             speed = 0;
@@ -245,27 +171,11 @@ Dom.addClassName('fast_lap_time', 'koruma');
       treeOffset = Util.increase(treeOffset, treeSpeed * playerSegment.curve * (position-startPosition)/segmentLength, 1);
 
       if (position > playerZ) {
-
-        if (currentLapTime && (startPosition < playerZ)) {
-          lastLapTime    = currentLapTime;
-          currentLapTime = 0;
-          if (lastLapTime <= Util.toFloat(Dom.storage.fast_lap_time)) {
-            Dom.storage.fast_lap_time = lastLapTime;
-            updateHud('fast_lap_time', lastLapTime);
-            Dom.addClassName('fast_lap_time', 'fastest');
-          }
-          else {
-            Dom.removeClassName('fast_lap_time', 'fastest');
-          }
-
-        }
-        else {
-          currentLapTime += dt;
-        }
+        currentLapTime += dt;
       }
-
-      updateHud('speed',            5 * Math.round(speed/500));
-      updateHud('current_lap_time', currentLapTime);
+      updateHud('speed',            Math.round(speed/100));
+      updateHud('current_lap_time', currentLapTime.toFixed(2));
+      updateHud('distance', Math.round(position));
     }
 
     //-------------------------------------------------------------------------
@@ -339,16 +249,6 @@ Dom.addClassName('fast_lap_time', 'koruma');
         hud[key].value = value;
         Dom.set(hud[key].dom, value);
       }
-    }
-
-    function formatTime(dt) {
-      var minutes = Math.floor(dt/60);
-      var seconds = Math.floor(dt - (minutes * 60));
-      var tenths  = Math.floor(10 * (dt - Math.floor(dt)));
-      if (minutes > 0)
-        return minutes + "." + (seconds < 10 ? "0" : "") + seconds + "." + tenths;
-      else
-        return seconds + "." + tenths;
     }
 
     //=========================================================================
@@ -459,7 +359,6 @@ Dom.addClassName('fast_lap_time', 'koruma');
           color: Math.floor(n/rumbleLength)%2 ? COLORS.DARK : COLORS.LIGHT
       });
     }
-
     function addSprite(n, sprite, offset) {
       segments[n].sprites.push({ source: sprite, offset: offset });
     }
@@ -570,19 +469,18 @@ Dom.addClassName('fast_lap_time', 'koruma');
 
     function resetSprites() {
       var n, i;
-
       addSprite(150,  SPRITES.BILLBOARD06, 0);
-      addSprite(200,  SPRITES.BILLBOARD08, -0.1);
-      addSprite(250,  SPRITES.BILLBOARD09, 0.1);
-      addSprite(300, SPRITES.BILLBOARD01, -0.1);
-      addSprite(350, SPRITES.BILLBOARD02, 0.1);
-      addSprite(400, SPRITES.BILLBOARD03, -0.1);
-      addSprite(450, SPRITES.BILLBOARD04, 0.1);
-      addSprite(500, SPRITES.BILLBOARD05, -0.1);
-      addSprite(550,  SPRITES.BILLBOARD07, -0.1);
+      addSprite(200,  SPRITES.BILLBOARD08, 0);
+      addSprite(250,  SPRITES.BILLBOARD09, 0);
+      addSprite(300, SPRITES.BILLBOARD07, 0);
+      addSprite(350, SPRITES.BILLBOARD02, 0);
+      addSprite(400, SPRITES.BILLBOARD03, 0);
+      addSprite(450, SPRITES.BILLBOARD04, 0);
+      addSprite(500, SPRITES.BILLBOARD05, 0);
+      addSprite(550,  SPRITES.BILLBOARD07, 0);
 
 
-      addSprite(240,                  SPRITES.BILLBOARD07, -1.2);
+      addSprite(500,                  SPRITES.BILLBOARD07, -1.2);
       addSprite(segments.length - 25, SPRITES.BILLBOARD07, -1.2);
 
 
@@ -594,7 +492,7 @@ Dom.addClassName('fast_lap_time', 'koruma');
       }
 
       for(n = 250 ; n < 1000 ; n += 5) {
-        addSprite(n,     SPRITES.COLUMN, 1.1);
+        addSprite(n,     SPRITES.COLUMN, 2.1);
         addSprite(n + Util.randomInt(0,5), SPRITES.TREE1, -1 - (Math.random() * 2));
         addSprite(n + Util.randomInt(0,5), SPRITES.TREE2, -1 - (Math.random() * 2));
       }
@@ -715,25 +613,63 @@ Dom.addClassName('fast_lap_time', 'koruma');
 
 
 function doModal(placementId, heading, formContent) {
-  html = '<div class="modal" role="dialog" id="myModal">';
-  html += '<img src="img/hediyeler_close.png" class="modal_close">'
-  html += '<img class="logo" src="img/hediyeler.jpg">';
-  html += "<ol><li><p>Katılan herkese Rowenta süpürgelerde tefalshop.com.tr'den %25 indirim</p></li>"
-  html += '<li><p>5 adet Rowenta Silence Force Multi Cyclonic</p></li>'
-  html += '<li><p>50 adet şarjlı el süpürgesi</p></li>'
-  html += '<li><p>500 adet Ice Age beslenme çantası</p></li></ol>'
-  html += '</div>';
-  html += '<div class="modal-backdrop fade in"></div>';
+    html = '<div class="modal" role="dialog" id="myModal">';
+    html += '<p>Bu '+placementId+' oldu</p>'
+if (heading) {html +='<button class="btn btn-default modal_close">BAŞLA</button>'}
+else {html +='<button class="btn btn-default modal_close">DEVAM</button>'};
+    html += '</div>';
+    html += '<div class="modal-backdrop fade in"></div>';
 
 
-  $('body').addClass('modal-open').append(html);
+    $('body').addClass('modal-open').append(html);
 
-  $('.modal-backdrop,.modal_close').click(function() {
-      $('#myModal, .modal-backdrop').remove();
-  });
+    $('.modal-backdrop,.modal_close').click(function() {
+        $('#myModal, .modal-backdrop').remove();
+        keyFaster = true;
+        keySlower = false;
+    });
 }
 
-  </script>
+if (window.DeviceMotionEvent != undefined) {
+        window.ondevicemotion = function(e) {
+            var x = Math.floor(e.accelerationIncludingGravity.x);
+            var y = Math.floor(e.accelerationIncludingGravity.y);
 
-</body> 
-</html>
+          if (x > 0) {
+                if (y <= -2) {
+                    console.log('sol');
+                    keyLeft   = true; 
+                    keyRight  = false;
+                }
+                else if (y >= 2) {
+                    console.log('sağ');
+                    keyLeft   = false; 
+                    keyRight  = true;
+                } else {
+                    console.log('orta');
+                    keyLeft   = false; 
+                    keyRight  = false;
+                }
+
+
+            } else {
+              if (y <= -2) {
+                    console.log('sağ');
+                    keyLeft   = false; 
+                    keyRight  = true;
+                }
+                else if (y >= 2) {
+                    console.log('sol');
+                    keyLeft   = true; 
+                    keyRight  = false;
+                } else {
+                    console.log('orta');
+                    keyLeft   = false; 
+                    keyRight  = false;
+                }
+
+            }
+
+        }
+
+    }
